@@ -127,7 +127,11 @@ const foodsMap = FOOD_AREAS.reduce((result, area) => {
 const App = () => {
 	const [ orderStatuses, setOrderStatuses ] = useState(JSON.parse((localStorage.getItem('orderStatuses') || 'null')) || {});
 	const [ order, setOrder ] = useState(JSON.parse((localStorage.getItem('orders') || 'null')) || {});
-
+	const [ options, setOptions] = useState({
+		faster: true,
+		time: "",
+		selfService: false,
+	});
 	return (
 		<Router>
 			<Switch>
@@ -152,6 +156,25 @@ const App = () => {
 					<Basket
 						foodAreas={FOOD_AREAS}
 						order={order}
+						options={options}
+						onSetFaster={(value) => {
+							setOptions({
+								...options,
+								faster: value,
+							})
+						}}
+						onSetTime={(value) => {
+							setOptions({
+								...options,
+								time: value,
+							})
+						}} 
+						onSetSelfService={(value) => {
+							setOptions({
+								...options,
+								selfService: value,
+							})
+						}}
 					/>
 				</Route>
 				<Route
@@ -162,6 +185,15 @@ const App = () => {
 						order={order}
 						orderStatuses={orderStatuses}
 						foodAreas={FOOD_AREAS}
+						setCancelOrder={({itemId}) => {
+
+							const nextStatuses = {...orderStatuses};
+
+							nextStatuses[itemId] = 'CANCELED';
+
+							setOrderStatuses(nextStatuses);
+							localStorage.setItem('orderStatuses', JSON.stringify(nextStatuses));
+						}}
 						setFinishedOrder={({ itemId }) => {
 							const nextStatuses = {...orderStatuses};
 

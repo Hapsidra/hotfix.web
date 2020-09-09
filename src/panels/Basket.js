@@ -14,14 +14,15 @@ const Basket = ({
   foodAreas,
   order,
   location,
+  options,
+  onSetSelfService,
+  onSetTime,
+  onSetFaster,
 }) => {
   const { pathname } = location;
-  const [faster, setFaster] = useState(true);
-  const [time, setTime] = useState("");
-  const [selfService, setSelfService] = useState(false);
   const area = foodAreas.filter((area) => area.id === areaId)[0];
   const item = area.items.filter((item) => item.id === itemId)[0];
-
+  const {faster, time, selfService} = options;
   const [price, products] = useMemo(() => {
     const foodIds = new Set((item.foods || []).map((item) => item.id));
 
@@ -95,10 +96,10 @@ const Basket = ({
             checked={faster}
             onToggle={() => {
               if (faster) {
-                setFaster(false);
+                onSetFaster(false);
               } else {
-                setTime("");
-                setFaster(true);
+                onSetTime("");
+                onSetFaster(true);
               }
             }}
           />
@@ -108,24 +109,24 @@ const Basket = ({
           <input
             value={time}
             onFocus={() => {
-              setFaster(false);
+              onSetFaster(false);
             }}
             onChange={(event) => {
               const { value } = event.target;
               if (!value) {
-                setTime(value);
+                onSetTime(value);
               } else {
                 const newValue = parseInt(value);
                 if (isNaN(newValue)) {
                   return;
                 }
-                setFaster(false);
-                setTime(newValue);
+                onSetFaster(false);
+                onSetTime(newValue);
               }
             }}
             onBlur={() => {
               if (time) {
-                setFaster(false);
+                onSetFaster(false);
               }
             }}
           />
@@ -134,14 +135,14 @@ const Basket = ({
           <h3>С собой</h3>
           <Checkbox
             checked={selfService}
-            onToggle={() => setSelfService(!selfService)}
+            onToggle={() => onSetSelfService(!selfService)}
           />
         </div>
         <div className="Place__choice-item">
           <h3>На месте</h3>
           <Checkbox
             checked={!selfService}
-            onToggle={() => setSelfService(!setSelfService)}
+            onToggle={() => onSetSelfService(!selfService)}
           />
         </div>
       </div>
